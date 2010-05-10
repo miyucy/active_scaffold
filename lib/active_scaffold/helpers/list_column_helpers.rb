@@ -114,7 +114,7 @@ module ActiveScaffold
           format_column_value(record, column)
         else
           value = record.send(column.name)
-          text, val = column.options[:options].find {|text, val| (val || text).to_s == value}
+          text, val = column.options[:options].find {|text, val| (val.nil? ? text : val).to_s == value.to_s}
           value = active_scaffold_translated_option(column, text, val).first if text
           format_column_value(record, column, value)
         end
@@ -350,6 +350,17 @@ module ActiveScaffold
         function << ')'
     
         javascript_tag(function)
+      end
+      
+      def mark_record(checked, url_params = {})
+        url_params.reverse_merge!(:controller => params_for[:controller], :action => 'mark', :eid => params[:eid])
+        ajax_options = {:method => :put,
+                        :url => url_for(url_params),
+                        :with => "'value=' + this.checked",
+                        :after => "var checkbox = this; this.disable();",
+                        :complete => "checkbox.enable();"}
+        script = remote_function(ajax_options)
+        check_box_tag('mark', '1', checked, :onclick => script, :class => 'mark_record')
       end
 
     end
