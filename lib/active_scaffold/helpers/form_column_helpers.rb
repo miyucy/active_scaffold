@@ -76,15 +76,15 @@ module ActiveScaffold
       end
 
       def javascript_for_update_column(column, scope, options)
-        if column.options[:update_column]
+        if column.update_column
           form_action = :create
           form_action = :update if params[:action] == 'edit'
-          url_params = {:action => 'render_field', :id => params[:id], :column => column.name, :update_column => column.options[:update_column]}
+          url_params = {:action => 'render_field', :id => params[:id], :column => column.name, :update_column => column.update_column}
           url_params[:eid] = params[:eid] if params[:eid]
           url_params[:controller] = controller.class.active_scaffold_controller_for(@record.class).controller_path if scope
           url_params[:scope] = params[:scope] if scope
           ajax_options = {:method => :get, 
-                          :url => url_for(url_params), :with => "'value=' + this.value",
+                          :url => url_for(url_params), :with => column.send_form_on_update_column ? "Form.serialize(this.form)" : "'value=' + this.value",
                           :after => "$('#{loading_indicator_id(:action => :render_field, :id => params[:id])}').style.visibility = 'visible'; Form.disable('#{element_form_id(:action => form_action)}');",
                           :complete => "$('#{loading_indicator_id(:action => :render_field, :id => params[:id])}').style.visibility = 'hidden'; Form.enable('#{element_form_id(:action => form_action)}');"}
           options[:onchange] = "#{remote_function(ajax_options)};#{options[:onchange]}"
@@ -138,8 +138,8 @@ module ActiveScaffold
       end
 
       def active_scaffold_translated_option(column, text, value = nil)
-        value = text.to_s if value.nil?
-        [(text.is_a?(Symbol) ? column.active_record_class.human_attribute_name(text) : text), value]
+        value = text if value.nil?
+        [(text.is_a?(Symbol) ? column.active_record_class.human_attribute_name(text) : text), value.to_s]
       end
 
       def active_scaffold_translated_options(column)
@@ -154,7 +154,7 @@ module ActiveScaffold
         elsif column.plural_association?
           active_scaffold_input_plural_association(column, html_options)
         else
-          options = { :selected => @record.send(column.name) }
+          options = { :selected => @record.send(column.name).to_s }
           options_for_select = active_scaffold_translated_options(column)
           html_options.update(column.options[:html_options] || {})
           options.update(column.options)
