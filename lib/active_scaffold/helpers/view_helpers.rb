@@ -70,9 +70,8 @@ module ActiveScaffold
         options[:target] = action_iframe_id(url_for_options)
         options[:multipart] = true
 
-        output=""
-        output << form_tag(url_for_options, options)
-        output << "<iframe id='#{action_iframe_id(url_for_options)}' name='#{action_iframe_id(url_for_options)}' style='display:none'></iframe>"
+        output = form_tag(url_for_options, options)
+        output << "<iframe id='#{action_iframe_id(url_for_options)}' name='#{action_iframe_id(url_for_options)}' style='display:none'></iframe>".html_safe
       end
 
       # Provides list of javascripts to include with +javascript_include_tag+
@@ -105,7 +104,7 @@ module ActiveScaffold
         options[:concat] += '_ie' if options[:concat].is_a? String
         ie_css = stylesheet_link_tag(*active_scaffold_ie_stylesheets(frontend).push(options))
 
-        "#{js}\n#{css}\n<!--[if IE]>#{ie_css}<![endif]-->\n"
+        "#{js}\n#{css}\n<!--[if IE]>#{ie_css}<![endif]-->\n".html_safe
       end
 
       # a general-use loading indicator (the "stuff is happening, please wait" feedback)
@@ -185,7 +184,7 @@ module ActiveScaffold
       def column_empty?(column_value)
         empty = column_value.nil?
         empty ||= column_value.empty? if column_value.respond_to? :empty?
-        empty ||= ['&nbsp;', active_scaffold_config.list.empty_field_text].include? column_value if String === column_value
+        empty ||= ['&nbsp;'.html_safe, active_scaffold_config.list.empty_field_text].include? column_value if String === column_value
         return empty
       end
 
