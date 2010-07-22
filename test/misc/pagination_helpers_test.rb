@@ -46,6 +46,12 @@ class PaginationHelpersTest < Test::Unit::TestCase
     assert_equal 'l .. l .. l .. l l 103 l l .. l .. l', links(103, nil, 2, true)
   end
 
+  def test_links_should_html_safe
+    self.stubs(:pagination_ajax_link).returns('l')
+
+    assert(links(1, 2).html_safe?)
+  end if ''.respond_to? :html_safe
+
   private
   def links(current, last_page, window_size = 2, infinite = false)
     paginator = stub(:last => last_page = stub(:number => last_page), :infinite? => infinite)
