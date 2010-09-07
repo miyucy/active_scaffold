@@ -23,7 +23,7 @@ module ActiveScaffold
         end
 
         value = '&nbsp;' if value.nil? or (value.respond_to?(:empty?) and value.empty?) # fix for IE 6
-        return value
+        return value.html_safe
       end
       
       # TODO: move empty_field_text and &nbsp; logic in here?
@@ -64,7 +64,7 @@ module ActiveScaffold
           else
             authorized = record.authorized_for?(:action => link.crud_type)
           end
-          return "<a class='disabled'>#{text}</a>" unless authorized
+          return "<a class='disabled'>#{text}</a>".html_safe unless authorized
 
           render_action_link(link, url_options, record)
         else

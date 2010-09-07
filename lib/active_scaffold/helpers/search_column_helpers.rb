@@ -79,7 +79,7 @@ module ActiveScaffold
 
         html << '</ul>'
         html << javascript_tag("new DraggableLists('#{options[:id]}')") if column.options[:draggable_lists]
-        html
+        html.html_safe
       end
 
       def active_scaffold_search_select(column, options)

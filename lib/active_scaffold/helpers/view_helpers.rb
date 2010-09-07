@@ -43,7 +43,7 @@ module ActiveScaffold
         select_options.insert(0,[as_(:_select_),nil]) if options[:include_blank]
         select_options.collect do |option|
           label, value = option[0], option[1]
-          value.nil? ? "<option value="">#{label}</option>" : "<option value=\"#{value}\">#{label}</option>"
+          value.nil? ? "<option value="">#{label}</option>".html_safe : "<option value=\"#{value}\">#{label}</option>".html_safe
         end
       end
 
@@ -71,7 +71,7 @@ module ActiveScaffold
         options[:multipart] = true
 
         output=""
-        output << "<iframe id='#{action_iframe_id(url_for_options)}' name='#{action_iframe_id(url_for_options)}' style='display:none'></iframe>"
+        output << "<iframe id='#{action_iframe_id(url_for_options)}' name='#{action_iframe_id(url_for_options)}' style='display:none'></iframe>".html_safe
         output << form_tag(url_for_options, options)
       end
 
@@ -185,7 +185,7 @@ module ActiveScaffold
       def column_empty?(column_value)
         empty = column_value.nil?
         empty ||= column_value.empty? if column_value.respond_to? :empty?
-        empty ||= ['&nbsp;', active_scaffold_config.list.empty_field_text].include? column_value if String === column_value
+        empty ||= ['&nbsp;'.html_safe, active_scaffold_config.list.empty_field_text].include? column_value if String === column_value
         return empty
       end
 
